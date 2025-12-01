@@ -1,0 +1,344 @@
+classdef app3 < matlab.apps.AppBase
+
+    % Properties that correspond to app components
+    properties (Access = public)
+        UIFigure          matlab.ui.Figure
+        BCLabel_4         matlab.ui.control.Label
+        BCLabel_3         matlab.ui.control.Label
+        BCLabel_2         matlab.ui.control.Label
+        BCLabel           matlab.ui.control.Label
+        BBLabel           matlab.ui.control.Label
+        BALabel           matlab.ui.control.Label
+        ACLabel           matlab.ui.control.Label
+        ABLabel           matlab.ui.control.Label
+        AALabel           matlab.ui.control.Label
+        LabelBA           matlab.ui.control.Label
+        LabelAC           matlab.ui.control.Label
+        LabelAB           matlab.ui.control.Label
+        Label2            matlab.ui.control.Label
+        ActualizarButton  matlab.ui.control.Button
+        LabelAA           matlab.ui.control.Label
+        CC                matlab.ui.control.Lamp
+        CB                matlab.ui.control.Lamp
+        CA                matlab.ui.control.Lamp
+        BC                matlab.ui.control.Lamp
+        BB                matlab.ui.control.Lamp
+        BA                matlab.ui.control.Lamp
+        AC                matlab.ui.control.Lamp
+        AB                matlab.ui.control.Lamp
+        AA                matlab.ui.control.Lamp
+        Image             matlab.ui.control.Image
+    end
+
+    
+    properties (Access = public)
+        channelID
+        readAPIKey
+        Timer 
+        HoraAA datetime
+        HoraAB datetime
+        HoraAC datetime
+        HoraBA datetime
+    end
+
+    % Callbacks that handle component events
+    methods (Access = private)
+
+        % Code that executes after component creation
+        function startupFcn(app)
+            channelID = 3150731;
+            readAPIKey = "41X5L7ZINFMZKVA1";
+             
+             
+        end
+
+        % Callback function
+        function ButtonPushed(app, event)
+
+        end
+
+        % Callback function
+        function PruebaButtonPushed(app, event)
+
+        end
+
+        % Button pushed function: ActualizarButton
+        function ActualizarButtonPushed(app, event)
+
+    tarifaMin = 4000;   % COP por minuto
+
+    % ============================
+    %   LECTURA THINGSPEAK
+    % ============================
+    channelID = 3150731;
+    readAPIKey = "41X5L7ZINFMZKVA1";
+
+    SensorAA = thingSpeakRead(channelID, "Fields", 1, "ReadKey", readAPIKey);
+    SensorAB = thingSpeakRead(channelID, "Fields", 2, "ReadKey", readAPIKey);
+    SensorAC = thingSpeakRead(channelID, "Fields", 3, "ReadKey", readAPIKey);
+    SensorBA = thingSpeakRead(channelID, "Fields", 4, "ReadKey", readAPIKey);
+
+% ============================
+%   AA
+% ============================
+if SensorAA == 1
+    app.AA.Color = 'red';
+
+    if isempty(app.HoraAA)
+        app.HoraAA = datetime("now");   % guardar hora solo la primera vez
+    end
+    
+    
+
+    minutos = minutes(datetime("now") - app.HoraAA);
+    app.LabelAA.Text = sprintf("$ %.0f", minutos * tarifaMin);
+
+    app.Label2.Text = num2str(minutos);
+
+else
+    app.AA.Color = 'green';
+
+    % Aquí NO usamos datetime con vacíos
+    app.HoraAA = datetime.empty;       
+    app.LabelAA.Text = "$ 0";
+end
+
+
+% ============================
+%   AB
+% ============================
+if SensorAB == 1
+    app.AB.Color = 'red';
+
+    if isempty(app.HoraAB)
+        app.HoraAB = datetime("now");   % guardar hora solo la primera vez
+    end
+
+    minutos = minutes(datetime("now") - app.HoraAB);
+    app.LabelAB.Text = sprintf("$ %.0f", minutos * tarifaMin);
+
+else
+    app.AB.Color = 'green';
+
+    % Aquí NO usamos datetime con vacíos
+    app.HoraAB = datetime.empty;       
+    app.LabelAB.Text = "$ 0";
+end
+
+% ============================
+%   AC
+% ============================
+if SensorAC == 1
+    app.AC.Color = 'red';
+
+    if isempty(app.HoraAC)
+        app.HoraAC = datetime("now");   % guardar hora solo la primera vez
+    end
+
+    minutos = minutes(datetime("now") - app.HoraAC);
+    app.LabelAC.Text = sprintf("$ %.0f", minutos * tarifaMin);
+
+else
+    app.AC.Color = 'green';
+
+    % Aquí NO usamos datetime con vacíos
+    app.HoraAC = datetime.empty;       
+    app.LabelAC.Text = "$ 0";
+end
+
+% ============================
+%   BA
+% ============================
+if SensorBA == 1
+    app.BA.Color = 'red';
+
+    if isempty(app.HoraBA)
+        app.HoraBA = datetime("now");   % guardar hora solo la primera vez
+    end
+
+    minutos = minutes(datetime("now") - app.HoraBA);
+    app.LabelBA.Text = sprintf("$ %.0f", minutos * tarifaMin);
+
+else
+    app.BA.Color = 'green';
+
+    % Aquí NO usamos datetime con vacíos
+    app.HoraBA = datetime.empty;       
+    app.LabelBA.Text = "$ 0";
+end
+        end
+    end
+
+    % Component initialization
+    methods (Access = private)
+
+        % Create UIFigure and components
+        function createComponents(app)
+
+            % Get the file path for locating images
+            pathToMLAPP = fileparts(mfilename('fullpath'));
+
+            % Create UIFigure and hide until all components are created
+            app.UIFigure = uifigure('Visible', 'off');
+            app.UIFigure.Position = [100 100 500 500];
+            app.UIFigure.Name = 'MATLAB App';
+
+            % Create Image
+            app.Image = uiimage(app.UIFigure);
+            app.Image.Position = [0 0 500 500];
+            app.Image.ImageSource = fullfile(pathToMLAPP, 'smart (5).png');
+
+            % Create AA
+            app.AA = uilamp(app.UIFigure);
+            app.AA.Position = [142 407 40 40];
+
+            % Create AB
+            app.AB = uilamp(app.UIFigure);
+            app.AB.Position = [231 407 40 40];
+
+            % Create AC
+            app.AC = uilamp(app.UIFigure);
+            app.AC.Position = [317 407 40 40];
+
+            % Create BA
+            app.BA = uilamp(app.UIFigure);
+            app.BA.Position = [142 280 40 40];
+
+            % Create BB
+            app.BB = uilamp(app.UIFigure);
+            app.BB.Position = [231 280 40 40];
+
+            % Create BC
+            app.BC = uilamp(app.UIFigure);
+            app.BC.Position = [317 280 40 40];
+
+            % Create CA
+            app.CA = uilamp(app.UIFigure);
+            app.CA.Position = [142 164 40 40];
+
+            % Create CB
+            app.CB = uilamp(app.UIFigure);
+            app.CB.Position = [231 164 40 40];
+
+            % Create CC
+            app.CC = uilamp(app.UIFigure);
+            app.CC.Position = [317 164 40 40];
+
+            % Create LabelAA
+            app.LabelAA = uilabel(app.UIFigure);
+            app.LabelAA.HorizontalAlignment = 'center';
+            app.LabelAA.Position = [123 458 79 22];
+
+            % Create ActualizarButton
+            app.ActualizarButton = uibutton(app.UIFigure, 'push');
+            app.ActualizarButton.ButtonPushedFcn = createCallbackFcn(app, @ActualizarButtonPushed, true);
+            app.ActualizarButton.Position = [384 436 100 23];
+            app.ActualizarButton.Text = 'Actualizar';
+
+            % Create Label2
+            app.Label2 = uilabel(app.UIFigure);
+            app.Label2.Position = [11 351 116 22];
+            app.Label2.Text = 'Label2';
+
+            % Create LabelAB
+            app.LabelAB = uilabel(app.UIFigure);
+            app.LabelAB.HorizontalAlignment = 'center';
+            app.LabelAB.Position = [211 458 79 22];
+
+            % Create LabelAC
+            app.LabelAC = uilabel(app.UIFigure);
+            app.LabelAC.HorizontalAlignment = 'center';
+            app.LabelAC.Position = [298 458 79 22];
+
+            % Create LabelBA
+            app.LabelBA = uilabel(app.UIFigure);
+            app.LabelBA.HorizontalAlignment = 'center';
+            app.LabelBA.Position = [123 320 79 22];
+
+            % Create AALabel
+            app.AALabel = uilabel(app.UIFigure);
+            app.AALabel.HorizontalAlignment = 'center';
+            app.AALabel.Position = [150 416 25 22];
+            app.AALabel.Text = 'AA';
+
+            % Create ABLabel
+            app.ABLabel = uilabel(app.UIFigure);
+            app.ABLabel.HorizontalAlignment = 'center';
+            app.ABLabel.Position = [238 416 25 22];
+            app.ABLabel.Text = 'AB';
+
+            % Create ACLabel
+            app.ACLabel = uilabel(app.UIFigure);
+            app.ACLabel.HorizontalAlignment = 'center';
+            app.ACLabel.Position = [325 416 25 22];
+            app.ACLabel.Text = 'AC';
+
+            % Create BALabel
+            app.BALabel = uilabel(app.UIFigure);
+            app.BALabel.HorizontalAlignment = 'center';
+            app.BALabel.Position = [150 289 25 22];
+            app.BALabel.Text = 'BA';
+
+            % Create BBLabel
+            app.BBLabel = uilabel(app.UIFigure);
+            app.BBLabel.HorizontalAlignment = 'center';
+            app.BBLabel.Position = [239 289 25 22];
+            app.BBLabel.Text = 'BB';
+
+            % Create BCLabel
+            app.BCLabel = uilabel(app.UIFigure);
+            app.BCLabel.HorizontalAlignment = 'center';
+            app.BCLabel.Position = [325 289 25 22];
+            app.BCLabel.Text = 'BC';
+
+            % Create BCLabel_2
+            app.BCLabel_2 = uilabel(app.UIFigure);
+            app.BCLabel_2.HorizontalAlignment = 'center';
+            app.BCLabel_2.Position = [150 173 25 22];
+            app.BCLabel_2.Text = 'BC';
+
+            % Create BCLabel_3
+            app.BCLabel_3 = uilabel(app.UIFigure);
+            app.BCLabel_3.HorizontalAlignment = 'center';
+            app.BCLabel_3.Position = [239 173 25 22];
+            app.BCLabel_3.Text = 'BC';
+
+            % Create BCLabel_4
+            app.BCLabel_4 = uilabel(app.UIFigure);
+            app.BCLabel_4.HorizontalAlignment = 'center';
+            app.BCLabel_4.Position = [325 173 25 22];
+            app.BCLabel_4.Text = 'BC';
+
+            % Show the figure after all components are created
+            app.UIFigure.Visible = 'on';
+        end
+    end
+
+    % App creation and deletion
+    methods (Access = public)
+
+        % Construct app
+        function app = app3
+
+            % Create UIFigure and components
+            createComponents(app)
+
+            % Register the app with App Designer
+            registerApp(app, app.UIFigure)
+
+            % Execute the startup function
+            runStartupFcn(app, @startupFcn)
+
+            if nargout == 0
+                clear app
+            end
+        end
+
+        % Code that executes before app deletion
+        function delete(app)
+
+            % Delete UIFigure when app is deleted
+            delete(app.UIFigure)
+        end
+    end
+end
