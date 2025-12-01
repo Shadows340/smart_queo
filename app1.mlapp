@@ -1,0 +1,125 @@
+classdef app1 < matlab.apps.AppBase
+
+    % Properties that correspond to app components
+    properties (Access = public)
+        UIFigure             matlab.ui.Figure
+        LabelAdvertencia     matlab.ui.control.Label
+        Image                matlab.ui.control.Image
+        AdministradorButton  matlab.ui.control.Button
+        UsuarioButton        matlab.ui.control.Button
+        ID                   matlab.ui.control.EditField
+        IDLabel              matlab.ui.control.Label
+    end
+
+    
+    properties (Access = public)
+        writeAPIKey = "71KCD4RO8TVRPF5H";
+        channelID = 3150731;
+    end
+    
+
+    % Callbacks that handle component events
+    methods (Access = private)
+
+        % Button pushed function: UsuarioButton
+        function UsuarioButtonButtonPushed(app, event)
+            valuer = app.ID.Value;
+            writeAPIKey = "71KCD4RO8TVRPF5H";
+            channelID = 3150731;
+
+            puestosValidos = ["AA","AB","AC","BA"];
+
+            if any(valuer == puestosValidos)
+                app2(valuer)
+            else
+                app.LabelAdvertencia.Text = "Puesto de parqueo no disponible";
+            end
+
+
+            
+        end
+
+        % Value changed function: ID
+        function IDValueChanged(app, event)
+            value = app.ID.Value;
+            
+        end
+    end
+
+    % Component initialization
+    methods (Access = private)
+
+        % Create UIFigure and components
+        function createComponents(app)
+
+            % Get the file path for locating images
+            pathToMLAPP = fileparts(mfilename('fullpath'));
+
+            % Create UIFigure and hide until all components are created
+            app.UIFigure = uifigure('Visible', 'off');
+            app.UIFigure.Position = [100 100 640 480];
+            app.UIFigure.Name = 'MATLAB App';
+
+            % Create IDLabel
+            app.IDLabel = uilabel(app.UIFigure);
+            app.IDLabel.HorizontalAlignment = 'right';
+            app.IDLabel.Position = [184 266 106 22];
+            app.IDLabel.Text = 'Puesto de parqueo';
+
+            % Create ID
+            app.ID = uieditfield(app.UIFigure, 'text');
+            app.ID.ValueChangedFcn = createCallbackFcn(app, @IDValueChanged, true);
+            app.ID.Position = [305 266 152 22];
+
+            % Create UsuarioButton
+            app.UsuarioButton = uibutton(app.UIFigure, 'push');
+            app.UsuarioButton.ButtonPushedFcn = createCallbackFcn(app, @UsuarioButtonButtonPushed, true);
+            app.UsuarioButton.Position = [262 208 117 31];
+            app.UsuarioButton.Text = 'Usuario';
+
+            % Create AdministradorButton
+            app.AdministradorButton = uibutton(app.UIFigure, 'push');
+            app.AdministradorButton.Position = [262 150 117 31];
+            app.AdministradorButton.Text = 'Administrador';
+
+            % Create Image
+            app.Image = uiimage(app.UIFigure);
+            app.Image.Position = [62 303 518 152];
+            app.Image.ImageSource = fullfile(pathToMLAPP, 'smart', '2.png');
+
+            % Create LabelAdvertencia
+            app.LabelAdvertencia = uilabel(app.UIFigure);
+            app.LabelAdvertencia.HorizontalAlignment = 'center';
+            app.LabelAdvertencia.FontColor = [1 0 0];
+            app.LabelAdvertencia.Position = [200 303 242 22];
+
+            % Show the figure after all components are created
+            app.UIFigure.Visible = 'on';
+        end
+    end
+
+    % App creation and deletion
+    methods (Access = public)
+
+        % Construct app
+        function app = app1
+
+            % Create UIFigure and components
+            createComponents(app)
+
+            % Register the app with App Designer
+            registerApp(app, app.UIFigure)
+
+            if nargout == 0
+                clear app
+            end
+        end
+
+        % Code that executes before app deletion
+        function delete(app)
+
+            % Delete UIFigure when app is deleted
+            delete(app.UIFigure)
+        end
+    end
+end
