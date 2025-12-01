@@ -1,0 +1,116 @@
+classdef app2 < matlab.apps.AppBase
+
+    % Properties that correspond to app components
+    properties (Access = public)
+        UIFigure         matlab.ui.Figure
+        Image            matlab.ui.control.Image
+        CONSULTASButton  matlab.ui.control.Button
+        MAPAButton       matlab.ui.control.Button
+        LabelID          matlab.ui.control.Label
+    end
+
+    
+    properties (Access = public)
+        ID % Description
+    end
+    
+
+    % Callbacks that handle component events
+    methods (Access = private)
+
+        % Code that executes after component creation
+        function startupFcn(app, ID)
+            app.ID = ID;
+            app.LabelID.Text = "Puesto " + ID;
+        end
+
+        % Button pushed function: MAPAButton
+        function MAPAButtonPushed(app, event)
+            app3
+        end
+
+        % Button pushed function: CONSULTASButton
+        function CONSULTASButtonPushed(app, event)
+            app4(app.ID)
+        end
+    end
+
+    % Component initialization
+    methods (Access = private)
+
+        % Create UIFigure and components
+        function createComponents(app)
+
+            % Get the file path for locating images
+            pathToMLAPP = fileparts(mfilename('fullpath'));
+
+            % Create UIFigure and hide until all components are created
+            app.UIFigure = uifigure('Visible', 'off');
+            app.UIFigure.Position = [100 100 640 480];
+            app.UIFigure.Name = 'MATLAB App';
+
+            % Create LabelID
+            app.LabelID = uilabel(app.UIFigure);
+            app.LabelID.HorizontalAlignment = 'center';
+            app.LabelID.FontName = 'Cooper Black';
+            app.LabelID.FontSize = 48;
+            app.LabelID.FontWeight = 'bold';
+            app.LabelID.FontColor = [0.0745 0.2941 0.6196];
+            app.LabelID.Position = [144 271 354 64];
+
+            % Create MAPAButton
+            app.MAPAButton = uibutton(app.UIFigure, 'push');
+            app.MAPAButton.ButtonPushedFcn = createCallbackFcn(app, @MAPAButtonPushed, true);
+            app.MAPAButton.Icon = fullfile(pathToMLAPP, 'MAPA.png');
+            app.MAPAButton.FontName = 'Franklin Gothic Medium';
+            app.MAPAButton.FontSize = 24;
+            app.MAPAButton.Position = [90 156 185 52];
+            app.MAPAButton.Text = 'MAPA';
+
+            % Create CONSULTASButton
+            app.CONSULTASButton = uibutton(app.UIFigure, 'push');
+            app.CONSULTASButton.ButtonPushedFcn = createCallbackFcn(app, @CONSULTASButtonPushed, true);
+            app.CONSULTASButton.Icon = fullfile(pathToMLAPP, 'Info.png');
+            app.CONSULTASButton.FontName = 'Franklin Gothic Medium';
+            app.CONSULTASButton.FontSize = 18;
+            app.CONSULTASButton.Position = [402 156 185 52];
+            app.CONSULTASButton.Text = 'CONSULTAS';
+
+            % Create Image
+            app.Image = uiimage(app.UIFigure);
+            app.Image.Position = [129 326 383 139];
+            app.Image.ImageSource = fullfile(pathToMLAPP, 'smart (1)', '3.png');
+
+            % Show the figure after all components are created
+            app.UIFigure.Visible = 'on';
+        end
+    end
+
+    % App creation and deletion
+    methods (Access = public)
+
+        % Construct app
+        function app = app2(varargin)
+
+            % Create UIFigure and components
+            createComponents(app)
+
+            % Register the app with App Designer
+            registerApp(app, app.UIFigure)
+
+            % Execute the startup function
+            runStartupFcn(app, @(app)startupFcn(app, varargin{:}))
+
+            if nargout == 0
+                clear app
+            end
+        end
+
+        % Code that executes before app deletion
+        function delete(app)
+
+            % Delete UIFigure when app is deleted
+            delete(app.UIFigure)
+        end
+    end
+end
