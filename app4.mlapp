@@ -1,0 +1,106 @@
+classdef app4 < matlab.apps.AppBase
+
+    % Properties that correspond to app components
+    properties (Access = public)
+        UIFigure                 matlab.ui.Figure
+        InfoImage                matlab.ui.control.Image
+        Logo                     matlab.ui.control.Image
+        SeleccioneDropDown       matlab.ui.control.DropDown
+        SeleccioneDropDownLabel  matlab.ui.control.Label
+    end
+
+    % Callbacks that handle component events
+    methods (Access = private)
+
+        % Code that executes after component creation
+        function startupFcn(app, ID)
+        app.InfoImage.ImageSource = "C:\Users\julia\Downloads\fondo_transparente_png_by_imsnowbieber_d3jme6i-fullview.png";
+
+        end
+
+        % Value changed function: SeleccioneDropDown
+        function SeleccioneDropDownValueChanged(app, event)
+value = app.SeleccioneDropDown.Value;
+
+switch value
+
+    case 'Horario'
+        app.InfoImage.ImageSource = "C:\Users\julia\Downloads\smart (1)\4.png";
+
+    case 'Costos'
+        app.InfoImage.ImageSource = "C:\Users\julia\Downloads\smart (1)\5.png";
+end 
+        end
+    end
+
+    % Component initialization
+    methods (Access = private)
+
+        % Create UIFigure and components
+        function createComponents(app)
+
+            % Get the file path for locating images
+            pathToMLAPP = fileparts(mfilename('fullpath'));
+
+            % Create UIFigure and hide until all components are created
+            app.UIFigure = uifigure('Visible', 'off');
+            app.UIFigure.Position = [100 100 640 480];
+            app.UIFigure.Name = 'MATLAB App';
+
+            % Create SeleccioneDropDownLabel
+            app.SeleccioneDropDownLabel = uilabel(app.UIFigure);
+            app.SeleccioneDropDownLabel.HorizontalAlignment = 'right';
+            app.SeleccioneDropDownLabel.FontSize = 14;
+            app.SeleccioneDropDownLabel.Position = [41 404 74 22];
+            app.SeleccioneDropDownLabel.Text = 'Seleccione';
+
+            % Create SeleccioneDropDown
+            app.SeleccioneDropDown = uidropdown(app.UIFigure);
+            app.SeleccioneDropDown.Items = {'Horario', 'Costos'};
+            app.SeleccioneDropDown.ValueChangedFcn = createCallbackFcn(app, @SeleccioneDropDownValueChanged, true);
+            app.SeleccioneDropDown.FontSize = 14;
+            app.SeleccioneDropDown.Position = [130 404 100 22];
+            app.SeleccioneDropDown.Value = 'Costos';
+
+            % Create Logo
+            app.Logo = uiimage(app.UIFigure);
+            app.Logo.Position = [24 77 173 190];
+            app.Logo.ImageSource = fullfile(pathToMLAPP, 'smart (1).png');
+
+            % Create InfoImage
+            app.InfoImage = uiimage(app.UIFigure);
+            app.InfoImage.Position = [221 18 412 446];
+
+            % Show the figure after all components are created
+            app.UIFigure.Visible = 'on';
+        end
+    end
+
+    % App creation and deletion
+    methods (Access = public)
+
+        % Construct app
+        function app = app4(varargin)
+
+            % Create UIFigure and components
+            createComponents(app)
+
+            % Register the app with App Designer
+            registerApp(app, app.UIFigure)
+
+            % Execute the startup function
+            runStartupFcn(app, @(app)startupFcn(app, varargin{:}))
+
+            if nargout == 0
+                clear app
+            end
+        end
+
+        % Code that executes before app deletion
+        function delete(app)
+
+            % Delete UIFigure when app is deleted
+            delete(app.UIFigure)
+        end
+    end
+end
